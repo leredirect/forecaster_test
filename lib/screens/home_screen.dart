@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:forecaster/screens/today_screen.dart';
+import 'package:forecaster/utils/utils.dart';
 
 import 'forecast_screen.dart';
 
@@ -29,14 +30,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Scaffold(
-      body: PageTransitionSwitcher(
-        transitionBuilder: (child, primaryAnimation, secondaryAnimation) =>
-            FadeThroughTransition(
-          animation: primaryAnimation,
-          secondaryAnimation: secondaryAnimation,
-          child: child,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Utils.fetchLocation(context);
+        },
+        displacement: 40,
+        child: PageTransitionSwitcher(
+          transitionBuilder: (child, primaryAnimation, secondaryAnimation) =>
+              FadeThroughTransition(
+            animation: primaryAnimation,
+            secondaryAnimation: secondaryAnimation,
+            child: child,
+          ),
+          child: _elements.elementAt(_currentIndex),
         ),
-        child: _elements.elementAt(_currentIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
         unselectedItemColor: Colors.grey,

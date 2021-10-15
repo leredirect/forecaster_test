@@ -8,10 +8,10 @@ class ConnectivityBloc extends Bloc<ConnectivityEvent, bool> {
   @override
   Stream<bool> mapEventToState(ConnectivityEvent event) async* {
     if (event is OnlineEvent) {
-      print("connected+++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+      print("network_connected+++++++++++++++++++++++++++++++++++++++++++++++");
       yield true;
     } else if (event is OfflineEvent) {
-      print("disconnected++++++++++++++++++++++++++++++++++++++++++++++++++++");
+      print("network_disconnected++++++++++++++++++++++++++++++++++++++++++++");
       yield false;
     }
   }
