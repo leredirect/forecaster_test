@@ -1,11 +1,24 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:forecaster/screens/home_screen.dart';
+import 'package:location/location.dart';
 
+import 'bloc/connectivity_bloc/connectivity_bloc.dart';
+import 'bloc/connectivity_bloc/connectivity_event.dart';
+import 'bloc/location_access_bloc/location_access_bloc.dart';
+import 'bloc/location_access_bloc/location_access_event.dart';
+import 'bloc/location_data_bloc/location_data_bloc.dart';
+import 'bloc/location_data_bloc/location_data_event.dart';
 
 void main() {
-  runApp(const ForecasterApp(key: Key("key")));
+  runApp(MultiBlocProvider(providers: [
+    BlocProvider<ConnectivityBloc>(create: (context) => ConnectivityBloc()),
+    BlocProvider<LocationAccessBloc>(create: (context) => LocationAccessBloc()),
+    BlocProvider<LocationDataBloc>(create: (context) => LocationDataBloc()),
+  ], child: const ForecasterApp(key: Key("key"))));
 }
 
 class ForecasterApp extends StatefulWidget {
@@ -36,7 +49,24 @@ class _ForecasterAppState extends State<ForecasterApp> {
   }
 
   @override
-  void initState() {
-    super.initState();
+  Future<void> didChangeDependencies() async {
+    super.didChangeDependencies();
+
+    print("DCD+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
+    Connectivity().checkConnectivity().then((value) {
+      if (value == ConnectivityResult.none) {
+        context.read<ConnectivityBloc>().add(OfflineEvent());
+      } else {
+        context.read<ConnectivityBloc>().add(OnlineEvent());
+      }
+    });
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        context.read<ConnectivityBloc>().add(OfflineEvent());
+      } else {
+        context.read<ConnectivityBloc>().add(OnlineEvent());
+      }
+    });
   }
 }
