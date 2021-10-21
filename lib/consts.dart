@@ -1,1 +1,1 @@
-const String openWeatherMapApiKey =  "appid=505bcf388f481953c43ab725fc3b96fa";
+const String openWeatherMapApiKey =  "appid=31207f4ba7c80667886d8feed0e6f708";

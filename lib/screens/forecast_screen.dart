@@ -20,7 +20,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
         centerTitle: true,
         backgroundColor: Colors.white,
       ),
-      body: const DayScheduleListWidget(),
+      body: DayScheduleListWidget(),
     );
   }
 }

@@ -1,45 +1,39 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:forecaster/bloc/location_access_bloc/location_access_bloc.dart';
-import 'package:forecaster/bloc/location_access_bloc/location_access_event.dart';
 import 'package:forecaster/bloc/location_data_bloc/location_data_bloc.dart';
 import 'package:forecaster/bloc/location_data_bloc/location_data_event.dart';
 import 'package:location/location.dart';
 
 class Utils {
-  static Future<void> fetchLocation(BuildContext context) async {
-    Location location = new Location();
+  static Future<LocationData> fetchLocation(BuildContext context) async {
+    Location location = Location();
 
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    bool _serviceEnabled = await location.serviceEnabled();
+    PermissionStatus _permissionGranted = await location.hasPermission();
     LocationData _locationData;
 
     try {
-      _serviceEnabled = await location.serviceEnabled();
       if (!_serviceEnabled) {
         _serviceEnabled = await location.requestService();
-        if (!_serviceEnabled) {
-          return;
-        }
-      }
-
-      _permissionGranted = await location.hasPermission();
-      if (_permissionGranted == PermissionStatus.denied) {
+      } else if (_permissionGranted == PermissionStatus.denied) {
         _permissionGranted = await location.requestPermission();
-        if (_permissionGranted != PermissionStatus.granted) {
-          return;
-        }
+      } else if( _permissionGranted != PermissionStatus.denied && _permissionGranted != PermissionStatus.deniedForever && _serviceEnabled){
+        _locationData = await location.getLocation();
+        print(_locationData.latitude.toString() +
+            _locationData.longitude.toString());
+        context
+            .read<LocationDataBloc>()
+            .add(LocationDataUpdateEvent(_locationData));
+        return _locationData;
+      }else{
+        Utils.showMyDialog(context, "Error", "Error code: Location Permission denied.", "Retry", fetchLocation);
       }
-
-      _locationData = await location.getLocation();
-      print(_locationData.latitude.toString() + _locationData.longitude.toString());
-      context.read<LocationDataBloc>().add(LocationDataUpdateEvent(_locationData));
-      await Future.delayed(Duration(seconds: 3));
     } on Exception catch (e) {
-      print (e);
+      print(e);
       fetchLocation(context);
     }
+    return fetchLocation(context);
   }
 
   static Future<void> showMyDialog(BuildContext context, String title,

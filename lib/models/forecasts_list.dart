@@ -35,8 +35,7 @@ class CurrentWeather {
   CurrentRain currentRain;
 
   factory CurrentWeather.fromJson(Map<String, dynamic> json) => CurrentWeather(
-        weather:
-            List<Weather>.from(json["weather"].map((x) => Weather.fromJson(x))),
+        weather: List<Weather>.from(json["weather"].map((x) => Weather.fromJson(x))),
         base: json["base"],
         main: Main.fromJson(json["main"]),
         visibility: json["visibility"],

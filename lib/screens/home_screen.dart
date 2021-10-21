@@ -12,6 +12,7 @@ import 'package:forecaster/models/forecasts_list.dart';
 import 'package:forecaster/screens/today_screen.dart';
 import 'package:forecaster/utils/utils.dart';
 import 'package:http/http.dart';
+import 'package:location/location.dart';
 
 import 'forecast_screen.dart';
 
@@ -27,18 +28,15 @@ int _currentIndex = 0;
 class _HomeScreenState extends State<HomeScreen> {
   Future<void> responseTransformer() async {
 
-    if (context.read<LocationDataBloc>().state.latitude == null &&
-    context.read<LocationDataBloc>().state.longitude == null){
-     await Utils.fetchLocation(context);
-    }
+     LocationData locationData = await Utils.fetchLocation(context);
 
     Response currentWeatherDataResponse = await CurrentWeather.fetchCurrentWeather(
-        context.read<LocationDataBloc>().state.latitude ?? 0.0,
-        context.read<LocationDataBloc>().state.longitude ?? 0.0);
+        locationData.latitude ?? 0.0,
+        locationData.longitude ?? 0.0);
 
     Response forecastsDataResponse = await ForecastsList.fetchForecasts(
-        context.read<LocationDataBloc>().state.latitude ?? 0.0,
-        context.read<LocationDataBloc>().state.longitude ?? 0.0);
+        locationData.latitude ?? 0.0,
+        locationData.longitude ?? 0.0);
     switch (forecastsDataResponse.statusCode & currentWeatherDataResponse.statusCode) {
       case 200:
         ForecastsList forecastsData = ForecastsList.fromJson(json.decode(forecastsDataResponse.body));

@@ -59,8 +59,6 @@ class _ForecasterAppState extends State<ForecasterApp> {
 
     print("DCD_MAIN++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
-    await Utils.fetchLocation(context);
-
     Connectivity().checkConnectivity().then((value) {
       if (value == ConnectivityResult.none) {
         context.read<ConnectivityBloc>().add(OfflineEvent());
