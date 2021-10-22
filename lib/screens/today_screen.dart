@@ -1,16 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:forecaster/models/forecasts_list.dart';
 import 'package:forecaster/widgets/today_briefly_widget.dart';
 import 'package:forecaster/widgets/today_details_widget.dart';
 
 class TodayScreen extends StatefulWidget {
   const TodayScreen({Key? key}) : super(key: key);
 
+
+  //late CurrentWeather currentWeather;
+
+  // TodayScreen(
+  //     //CurrentWeather currentWeather,
+  // {Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => _TodayScreenState();
 }
 
 class _TodayScreenState extends State<TodayScreen> {
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +38,7 @@ class _TodayScreenState extends State<TodayScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Spacer(),
-                const TodayBrieflyWidget(),
+                TodayBrieflyWidget(),
                 Spacer(),
                 Container(
                   height: 1,

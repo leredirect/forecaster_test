@@ -30,17 +30,7 @@ class DayScheduleListWidget extends StatelessWidget {
     }
 
     int itemCount(int index){
-          return context
-              .read<ForecastsDataBloc>()
-              .state
-              .list
-              .where((element) => DateTime
-              .fromMillisecondsSinceEpoch(element.dt * 1000)
-              .day == DateTime
-              .now().add(Duration(days: outerIndex))
-              .day)
-              .toList()
-              .length;
+          return context.read<ForecastsDataBloc>().state.list.where((element) => DateTime.fromMillisecondsSinceEpoch(element.dt * 1000).day == DateTime.now().add(Duration(days: outerIndex)).day).toList().length;
     }
     return ListView.builder(
       itemCount: 5,

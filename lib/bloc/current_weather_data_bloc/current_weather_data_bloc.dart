@@ -13,7 +13,7 @@ class CurrentWeatherDataBloc
             id: 0,
             cod: 0,
             clouds: Clouds(all: 0),
-            sys: CurrentSys(country: '', id: 0, sunset: 0, type: 0, sunrise: 0),
+            currentSys: CurrentSys(country: '', id: 0, sunset: 0, type: 0, sunrise: 0),
             main: Main(
                 temp: 0,
                 feelsLike: 0,
@@ -33,7 +33,7 @@ class CurrentWeatherDataBloc
   Stream<CurrentWeather> mapEventToState(CurrentWeatherDataEvent event) async* {
     if (event is CurrentWeatherDataUpdateEvent) {
       print("current_updated++++++++++++++++++++++++++++++++++++++++++++++");
-      yield event.currentWeather;
+      yield state.copyWith(event.currentWeather);
     }
   }
 }

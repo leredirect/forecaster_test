@@ -7,7 +7,6 @@ import 'package:forecaster/bloc/current_weather_data_bloc/current_weather_data_b
 import 'package:forecaster/bloc/current_weather_data_bloc/current_weather_data_event.dart';
 import 'package:forecaster/bloc/forecasts_data_bloc/forecasts_data_bloc.dart';
 import 'package:forecaster/bloc/forecasts_data_bloc/forecasts_data_event.dart';
-import 'package:forecaster/bloc/location_data_bloc/location_data_bloc.dart';
 import 'package:forecaster/models/forecasts_list.dart';
 import 'package:forecaster/screens/today_screen.dart';
 import 'package:forecaster/utils/utils.dart';
@@ -27,53 +26,58 @@ int _currentIndex = 0;
 
 class _HomeScreenState extends State<HomeScreen> {
   Future<void> responseTransformer() async {
+    LocationData locationData = await Utils.fetchLocation(context);
 
-     LocationData locationData = await Utils.fetchLocation(context);
-
-    Response currentWeatherDataResponse = await CurrentWeather.fetchCurrentWeather(
-        locationData.latitude ?? 0.0,
-        locationData.longitude ?? 0.0);
+    Response currentWeatherDataResponse =
+        await CurrentWeather.fetchCurrentWeather(
+            locationData.latitude ?? 0.0, locationData.longitude ?? 0.0);
 
     Response forecastsDataResponse = await ForecastsList.fetchForecasts(
-        locationData.latitude ?? 0.0,
-        locationData.longitude ?? 0.0);
-    switch (forecastsDataResponse.statusCode & currentWeatherDataResponse.statusCode) {
+        locationData.latitude ?? 0.0, locationData.longitude ?? 0.0);
+    switch (forecastsDataResponse.statusCode &
+        currentWeatherDataResponse.statusCode) {
       case 200:
-        ForecastsList forecastsData = ForecastsList.fromJson(json.decode(forecastsDataResponse.body));
-        context.read<ForecastsDataBloc>().add(ForecastsDataUpdateEvent(forecastsData));
+        ForecastsList forecastsData =
+            ForecastsList.fromJson(json.decode(forecastsDataResponse.body));
+        context
+            .read<ForecastsDataBloc>()
+            .add(ForecastsDataUpdateEvent(forecastsData));
         print('41');
-        CurrentWeather currentWeatherData = CurrentWeather.fromJson(json.decode(currentWeatherDataResponse.body));
+        CurrentWeather currentWeatherData = CurrentWeather.fromJson(
+            json.decode(currentWeatherDataResponse.body));
         context.read<CurrentWeatherDataBloc>().add(CurrentWeatherDataUpdateEvent(currentWeatherData));
         print('44');
         break;
       default:
         int statusCode = 0;
-        if (currentWeatherDataResponse.statusCode != 200){
+        if (currentWeatherDataResponse.statusCode != 200) {
           statusCode = currentWeatherDataResponse.statusCode;
         }
-        if (forecastsDataResponse.statusCode != 200){
+        if (forecastsDataResponse.statusCode != 200) {
           statusCode = currentWeatherDataResponse.statusCode;
         }
-        Utils.showMyDialog(context, "Error", "Error code: HTTP $statusCode", "Retry", responseTransformer);
+        Utils.showMyDialog(context, "Error", "Error code: HTTP $statusCode",
+            "Retry", responseTransformer);
     }
   }
 
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
-    print("DCD_HS+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    print(
+        "DCD_HS+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     try {
       await responseTransformer();
-    }on Exception catch (err) {
-    print("Platform exception calling serviceEnabled(): $err ++++++++++++++");
-    await responseTransformer();
+    } on Exception catch (err) {
+      print("Platform exception calling serviceEnabled(): $err ++++++++++++++");
+      await responseTransformer();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     List<Widget> _elements = [
-      const TodayScreen(),
+      TodayScreen(),
       const ForecastScreen(),
     ];
 
@@ -83,10 +87,11 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
 
+    print("rebuild");
     return Scaffold(
-      body: BlocBuilder<ForecastsDataBloc, ForecastsList>(
+      body: BlocBuilder<CurrentWeatherDataBloc, CurrentWeather>(
           builder: (context, state) {
-        if (state.list.isNotEmpty) {
+        if (state.weather.isNotEmpty) {
           print("64");
           return RefreshIndicator(
             onRefresh: () async {
@@ -97,9 +102,9 @@ class _HomeScreenState extends State<HomeScreen> {
               transitionBuilder:
                   (child, primaryAnimation, secondaryAnimation) =>
                       FadeThroughTransition(
-                        animation: primaryAnimation,
-                        secondaryAnimation: secondaryAnimation,
-                        child: child,
+                animation: primaryAnimation,
+                secondaryAnimation: secondaryAnimation,
+                child: child,
               ),
               child: _elements.elementAt(_currentIndex),
             ),
