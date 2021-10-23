@@ -5,7 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:forecaster/bloc/forecasts_data_bloc/forecasts_data_bloc.dart';
 
 class ForecastScreen extends StatefulWidget {
-  const ForecastScreen({Key? key}) : super(key: key);
+  final String cityName;
+  const ForecastScreen({Key? key, required this.cityName}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ForecastScreenState();

@@ -26,7 +26,9 @@ int _currentIndex = 0;
 
 class _HomeScreenState extends State<HomeScreen> {
   Future<void> responseTransformer() async {
-    LocationData locationData = await Utils.fetchLocation(context);
+    try {
+      LocationData locationData = await Utils.fetchLocation(context);
+
 
     Response currentWeatherDataResponse =
         await CurrentWeather.fetchCurrentWeather(
@@ -59,6 +61,10 @@ class _HomeScreenState extends State<HomeScreen> {
         Utils.showMyDialog(context, "Error", "Error code: HTTP $statusCode",
             "Retry", responseTransformer);
     }
+    } on Exception catch (e) {
+      //Utils.showMyDialog(context, "Error", "Error code: Platform exception.\n$e", "Retry", Utils.fetchLocation(context));
+      responseTransformer();
+    }
   }
 
   @override
@@ -76,10 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> _elements = [
-      TodayScreen(),
-      const ForecastScreen(),
-    ];
+
 
     void changeTab(int index) {
       setState(() {
@@ -91,6 +94,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: BlocBuilder<CurrentWeatherDataBloc, CurrentWeather>(
           builder: (context, state) {
+
+            List<Widget> _elements = [
+              TodayScreen(),
+              ForecastScreen(cityName: state.name,),
+            ];
+
         if (state.weather.isNotEmpty) {
           print("64");
           return RefreshIndicator(

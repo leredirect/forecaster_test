@@ -8,8 +8,6 @@ import 'package:intl/intl.dart';
 class DayScheduleListWidget extends StatelessWidget {
   DayScheduleListWidget({Key? key}) : super(key: key);
 
-  final int index = 1;
-  int outerIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -29,42 +27,69 @@ class DayScheduleListWidget extends StatelessWidget {
       return result;
     }
 
-    int itemCount(int index){
-          return context.read<ForecastsDataBloc>().state.list.where((element) => DateTime.fromMillisecondsSinceEpoch(element.dt * 1000).day == DateTime.now().add(Duration(days: outerIndex)).day).toList().length;
+    int itemCount(int index) {
+      List result = context
+          .read<ForecastsDataBloc>()
+          .state
+          .list
+          .where((element) =>
+      DateTime
+          .fromMillisecondsSinceEpoch(element.dt * 1000)
+          .day == DateTime
+          .now()
+          .day)
+          .toList();
+      if (index == 0) {
+        return result.length;
+      } else {
+        return 8;
+      }
     }
+
     return ListView.builder(
       itemCount: 5,
       itemBuilder: (BuildContext context, index) {
-        outerIndex++;
         return Column(
           children: [
             Container(
               margin: const EdgeInsets.only(top: 5),
               child: Text(DateFormat('dd-MM-yyyy').format(
                   DateTime.fromMillisecondsSinceEpoch(context
-                          .read<ForecastsDataBloc>()
-                          .state
-                          .list[index == 0 ? 0 : (index * 8) - 1]
-                          .dt *
+                      .read<ForecastsDataBloc>()
+                      .state
+                      .list[index == 0 ? 0 : (index * 8) - 1]
+                      .dt *
                       1000))),
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height / 20,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height / 20,
             ),
             ListView.builder(
+              addSemanticIndexes: false,
               physics: const ClampingScrollPhysics(),
               shrinkWrap: true,
-              itemCount: itemCount(outerIndex),
+              itemCount: itemCount(index),
               itemBuilder: (BuildContext context, innerIndex) {
-           
                 return Container(
                   padding: const EdgeInsets.only(left: 10, right: 10),
                   margin: const EdgeInsets.only(top: 5),
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height / 12,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
+                  height: MediaQuery
+                      .of(context)
+                      .size
+                      .height / 12,
                   decoration:
-                      BoxDecoration(border: Border.all(color: Colors.black)),
+                  BoxDecoration(border: Border.all(color: Colors.black)),
                   child: WeatherInHourWidget(
-                        index: indexToInnerIndex(innerIndex, index)),
+                      index: indexToInnerIndex(innerIndex, index)),
                 );
               },
             ),

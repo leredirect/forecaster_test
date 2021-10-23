@@ -69,16 +69,17 @@ class CurrentWeather {
 
   static Future<Response> fetchCurrentWeather(double lat, double lon) async {
     Response response = await http.get(Uri.parse(
-        // 'https://api.openweathermap.org/data/2.5/weather?lat=' +
-        //     lat.toString() +
-        //     '&lon=' +
-        //     lon.toString() +
-        //     '&' +
+        'https://api.openweathermap.org/data/2.5/weather?lat=' +
+            lat.toString() +
+            '&lon=' +
+            lon.toString() +
+            '&' +
+            openWeatherMapApiKey +
+            '&units=metric'
+        // 'https://api.openweathermap.org/data/2.5/weather?lat=43&lon=23&' +
         //     openWeatherMapApiKey +
         //     '&units=metric'
-        'https://api.openweathermap.org/data/2.5/weather?lat=43&lon=23&' +
-            openWeatherMapApiKey +
-            '&units=metric'));
+    ));
     print(response.statusCode);
     print(response.body);
     return response;
@@ -127,8 +128,17 @@ class CurrentRain {
   late double the1H;
 
   CurrentRain.fromJson(Map<String, dynamic> json) {
-    the3H = json["3h"].toDouble();
-    the1H = json["1h"].toDouble();
+    if (json["3H"] != null && json["1H"] != null){
+      the3H = json["3H"].toDouble();
+      the1H = json["1H"].toDouble();
+    }
+    else{
+      the3H = 0.0;
+      the1H = 0.0;
+    }
+
+    //the3H = json["3h"].toDouble();
+   // the1H = json["1h"].toDouble();
   }
 
   Map<dynamic, dynamic> toMap() {
@@ -229,13 +239,17 @@ class ForecastsList {
 
   static Future<Response> fetchForecasts(double lat, double lon) async {
     Response response = await http.get(Uri.parse(
-        'https://api.openweathermap.org/data/2.5/forecast?lat=' +
-            lat.toString() +
-            '&lon=' +
-            lon.toString() +
-            '&' +
+        // 'https://api.openweathermap.org/data/2.5/forecast?lat=' +
+        //     lat.toString() +
+        //     '&lon=' +
+        //     lon.toString() +
+        //     '&' +
+        //     openWeatherMapApiKey +
+        //     '&units=metric'
+        'https://api.openweathermap.org/data/2.5/forecast?lat=36&lon=32&' +
             openWeatherMapApiKey +
-            '&units=metric'));
+            '&units=metric'
+    ));
     print(response.statusCode);
     print(response.body);
     return response;
@@ -528,7 +542,12 @@ class Wind {
   Wind.fromJson(Map<String, dynamic> json) {
     speed = json["speed"].toDouble();
     deg = json["deg"];
-    gust = json["gust"].toDouble();
+    if (json["gust"] != null){
+      gust = json["gust"].toDouble();
+    }
+    else{
+      gust = 0.0;
+    }
   }
 
   Map<String, dynamic> toJson() => {
