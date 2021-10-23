@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:forecaster/bloc/current_weather_data_bloc/current_weather_data_bloc.dart';
 import 'package:forecaster/models/forecasts_list.dart';
+import 'package:forecaster/res/fonts/forecaster_icons.dart';
+import 'package:forecaster/utils/utils.dart';
+
+import '../consts.dart';
 
 class TodayBrieflyWidget extends StatelessWidget {
   const TodayBrieflyWidget({Key? key}) : super(key: key);
@@ -11,39 +15,43 @@ class TodayBrieflyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     //CurrentWeather state = context.read<CurrentWeatherDataBloc>().state;
     return BlocBuilder<CurrentWeatherDataBloc, CurrentWeather>(
         builder: (context, state) {
-
           if (state.weather.isNotEmpty){
       return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.wb_sunny_sharp,
-            size: 100,
+          Icon(
+            Utils.nameToIconMap[state.weather.first.icon], color: Colors.yellow.shade600, size: 120,
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                  margin: const EdgeInsets.only(right: 15, bottom: 20),
-                  child: const Icon(
-                    Icons.location_on,
-                    size: 10,
-                  )),
-              Text(state.name + ", " + state.currentSys.country),
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/2.8, bottom: 20),
+                  child: Icon(
+                    Icons.location_on_outlined,
+                    size: 10, color: Colors.blue,
+                  ),
+                ),
+              ),
+              Container(margin: EdgeInsets.all(15),child: Text(state.name + ", " + state.currentSys.country,style: bigText,)),
+              Spacer(),
             ],
           ),
           Text(state.main.temp.round().toString() +
               "C°" +
               " | " +
-              state.weather.first.description.toString()),
+              state.weather.first.description.toString().toUpperCase(), style: blueBigText,),
         ],
-      );}else{
-            return Placeholder();
+      );
+          }else{
+            return Container();
           }
     });
   }

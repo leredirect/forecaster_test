@@ -3,40 +3,58 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:forecaster/bloc/current_weather_data_bloc/current_weather_data_bloc.dart';
 import 'package:forecaster/bloc/forecasts_data_bloc/forecasts_data_bloc.dart';
+import 'package:forecaster/consts.dart';
 import 'package:forecaster/models/forecasts_list.dart';
+import 'package:forecaster/utils/utils.dart';
 import 'package:intl/intl.dart';
 
 class WeatherInHourWidget extends StatelessWidget {
-  WeatherInHourWidget({Key? key, required this.index}) : super(key: key);
+  const WeatherInHourWidget({Key? key, required this.index}) : super(key: key);
 
   final int index;
 
   @override
   Widget build(BuildContext context) {
-    var state = context.read<ForecastsDataBloc>().state;
+    //var state = context.read<ForecastsDataBloc>().state;
     return BlocBuilder<ForecastsDataBloc, ForecastsList>(
       builder: (context, state) {
-        return Row(
+        return Table(
+          defaultVerticalAlignment: TableCellVerticalAlignment.bottom,
+          columnWidths: <int, TableColumnWidth>{
+            0: FixedColumnWidth(MediaQuery.of(context).size.width / 20),
+            1: FlexColumnWidth(),
+            2: FixedColumnWidth(MediaQuery.of(context).size.width / 7)
+          },
           children: [
-            const Icon(
-              Icons.wb_cloudy,
-              size: 50,
+            TableRow(
+              children:[
+                TableCell(
+                  child: Icon(
+                  Utils.nameToIconMap[state.list[index].weather.first.icon], color: Colors.yellow.shade600,
+                  size: 50,
+              ),
+                ),
+                TableCell(
+                  child: Container(
+                    margin: EdgeInsets.only(left: MediaQuery.of(context).size.width/6),
+                    child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(state.list[index].dt* 1000)), style: mediumText),
+                        Text(state.list[index].weather.first.description, style: mediumText,),
+        ],
+                    ),
+                  ),
+                ),
+
+                TableCell(
+                    child: Text(
+                      state.list[index].main.temp.toInt().round().toString() + "°",
+                      style: blueGiantBoldText, textAlign: TextAlign.end,
+                    ),
+                )
+              ]
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 7,
-            ),
-            Column(
-              children:  [
-                Text(DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(state.list[index].dt* 1000))),
-                Text(state.list[index].weather.first.description),
-                Text("index $index"),
-              ],
-            ),
-            Spacer(),
-             Text(
-               state.list[index].main.temp.toInt().round().toString(),
-              style: const TextStyle(color: Colors.lightBlue, fontSize: 30),
-            )
           ],
         );
       }

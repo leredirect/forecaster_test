@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:forecaster/bloc/current_weather_data_bloc/current_weather_data_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:forecaster/models/forecasts_list.dart';
+import 'package:forecaster/res/fonts/forecaster_icons.dart';
+
+import '../consts.dart';
 
 class TodayDetailsWidget extends StatelessWidget {
   const TodayDetailsWidget({Key? key}) : super(key: key);
@@ -26,7 +29,7 @@ class TodayDetailsWidget extends StatelessWidget {
                   margin: EdgeInsets.all(10),
                   child: Column(children:[
                     Icon(
-                      Icons.wb_sunny_sharp,
+                     ForecasterIcons.rain, color: Colors.yellow.shade600, size: 25,
                     ),
                     Text(state.main.humidity.toString() + " %"),
                   ]),
@@ -35,16 +38,16 @@ class TodayDetailsWidget extends StatelessWidget {
                     margin: EdgeInsets.all(10),
                   child: Column(children: [
                     Icon(
-                      Icons.wb_sunny_sharp,
+                      ForecasterIcons.drop, color: Colors.yellow.shade600, size: 25,
                     ),
-                    Text(state.currentRain.the1H.toString() + " mm"),
+                    Text(state.currentRain.the1H == 0.0?  "0 mm": state.currentRain.the1H.toString() + " mm"),
                   ]),
                 ),
                 Container(
                   margin: EdgeInsets.all(10),
                   child: Column(children: [
                     Icon(
-                      Icons.wb_sunny_sharp,
+                      ForecasterIcons.pressure, color: Colors.yellow.shade600,size: 25,
                     ),
                     Text(state.main.pressure.toString() + " hPa"),
                   ]),
@@ -59,7 +62,7 @@ class TodayDetailsWidget extends StatelessWidget {
                   margin: EdgeInsets.all(10),
                   child: Column(children: [
                     Icon(
-                      Icons.wb_sunny_sharp,
+                      ForecasterIcons.wind,color: Colors.yellow.shade600,size: 25,
                     ),
                     Text(state.wind.speed.toString() + " km/h"),
                   ]),
@@ -68,9 +71,9 @@ class TodayDetailsWidget extends StatelessWidget {
                   margin: EdgeInsets.all(10),
                   child: Column(children:  [
                     Icon(
-                      Icons.wb_sunny_sharp,
+                      ForecasterIcons.compass,color: Colors.yellow.shade600,size: 25,
                     ),
-                    Text(state.wind.degreesToRoseOfWind()),
+                    Text(state.wind.degreesToRoseOfWind(),),
                   ]),
                 ),
               ],

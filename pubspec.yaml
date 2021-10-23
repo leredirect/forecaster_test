@@ -27,5 +27,8 @@ dev_dependencies:
   flutter_lints: ^1.0.0
 
 flutter:
-
+  fonts:
+    - family: ForecasterIcons
+      fonts:
+        - asset: lib/res/fonts/forecaster_icons.ttf
   uses-material-design: true
