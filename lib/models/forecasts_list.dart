@@ -3,6 +3,27 @@ import 'package:http/http.dart' as http;
 
 import '../consts.dart';
 
+enum ForecasterIconList {
+  the_01d,
+  the_02d,
+  the_03d,
+  the_04d,
+  the_09d,
+  the_10d,
+  the_11d,
+  the_13d,
+  the_50d,
+  the_01n,
+  the_02n,
+  the_03n,
+  the_04n,
+  the_09n,
+  the_10n,
+  the_11n,
+  the_13n,
+  the_50n
+}
+
 class CurrentWeather {
   CurrentWeather({
     required this.weather,
@@ -79,7 +100,7 @@ class CurrentWeather {
         // 'https://api.openweathermap.org/data/2.5/weather?lat=43&lon=23&' +
         //     openWeatherMapApiKey +
         //     '&units=metric'
-    ));
+        ));
     print(response.statusCode);
     print(response.body);
     return response;
@@ -128,17 +149,13 @@ class CurrentRain {
   late double the1H;
 
   CurrentRain.fromJson(Map<String, dynamic> json) {
-    if (json["3H"] != null && json["1H"] != null){
+    if (json["3H"] != null && json["1H"] != null) {
       the3H = json["3H"].toDouble();
       the1H = json["1H"].toDouble();
-    }
-    else{
+    } else {
       the3H = 0.0;
       the1H = 0.0;
     }
-
-    //the3H = json["3h"].toDouble();
-   // the1H = json["1h"].toDouble();
   }
 
   Map<dynamic, dynamic> toMap() {
@@ -239,17 +256,17 @@ class ForecastsList {
 
   static Future<Response> fetchForecasts(double lat, double lon) async {
     Response response = await http.get(Uri.parse(
-        // 'https://api.openweathermap.org/data/2.5/forecast?lat=' +
-        //     lat.toString() +
-        //     '&lon=' +
-        //     lon.toString() +
-        //     '&' +
-        //     openWeatherMapApiKey +
-        //     '&units=metric'
-        'https://api.openweathermap.org/data/2.5/forecast?lat=36&lon=32&' +
+        'https://api.openweathermap.org/data/2.5/forecast?lat=' +
+            lat.toString() +
+            '&lon=' +
+            lon.toString() +
+            '&' +
             openWeatherMapApiKey +
             '&units=metric'
-    ));
+        // 'https://api.openweathermap.org/data/2.5/forecast?lat=36&lon=32&' +
+        //     openWeatherMapApiKey +
+        //     '&units=metric'
+        ));
     print(response.statusCode);
     print(response.body);
     return response;
@@ -324,7 +341,6 @@ class ListElement {
     required this.pop,
     required this.sys,
     required this.dtTxt,
-    // required this.rain,
   });
 
   late int dt;
@@ -337,8 +353,6 @@ class ListElement {
   late Sys sys;
   late DateTime dtTxt;
 
-  //Rain rain;
-
   ListElement.fromJson(Map<String, dynamic> json) {
     dt = json["dt"];
     main = MainClass.fromJson(json["main"]);
@@ -350,7 +364,9 @@ class ListElement {
     pop = json["pop"].toDouble();
     sys = Sys.fromJson(json["sys"]);
     dtTxt = DateTime.parse(json["dt_txt"]);
-    //rain= json["rain"] ?? Rain(the3H: 0);
+
+
+
   }
 
   Map<String, dynamic> toJson() => {
@@ -363,7 +379,6 @@ class ListElement {
         "pop": pop,
         "sys": sys.toJson(),
         "dt_txt": dtTxt.toIso8601String(),
-        // "rain": rain.toJson(),
       };
 }
 
@@ -439,7 +454,11 @@ class Rain {
   late double the3H;
 
   Rain.fromJson(Map<String, dynamic> json) {
-    the3H = json["3h"].toDouble();
+    if (json["3h"] != null) {
+      the3H = json["3h"].toDouble();
+    } else {
+      the3H = 0.0;
+    }
   }
 
   Map<String, dynamic> toJson() => {
@@ -472,22 +491,26 @@ class Weather {
     required this.id,
     required this.main,
     required this.description,
+    required this.icon,
   });
 
   late int id;
   late String main;
   late String description;
+  late String icon;
 
   Weather.fromJson(Map<String, dynamic> json) {
     id = json["id"];
     main = json["main"]!;
     description = json["description"]!;
+    icon = json["icon"];
   }
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "main": mainEnumValues.reverse[main],
         "description": descriptionValues.reverse[description],
+        "icon": icon,
       };
 }
 
@@ -507,17 +530,6 @@ final descriptionValues = EnumValues({
   "overcast clouds": Description.OVERCAST_CLOUDS,
   "scattered clouds": Description.SCATTERED_CLOUDS,
   "light snow": Description.LIGHT_SNOW,
-});
-
-enum IconList { THE_03_D, THE_04_N, THE_04_D, THE_10_D, THE_01_N, THE_10_N }
-
-final iconValues = EnumValues({
-  "01n": IconList.THE_01_N,
-  "03d": IconList.THE_03_D,
-  "04d": IconList.THE_04_D,
-  "04n": IconList.THE_04_N,
-  "10d": IconList.THE_10_D,
-  "10n": IconList.THE_10_N
 });
 
 enum MainEnum { CLOUDS, RAIN, CLEAR }
@@ -542,10 +554,9 @@ class Wind {
   Wind.fromJson(Map<String, dynamic> json) {
     speed = json["speed"].toDouble();
     deg = json["deg"];
-    if (json["gust"] != null){
+    if (json["gust"] != null) {
       gust = json["gust"].toDouble();
-    }
-    else{
+    } else {
       gust = 0.0;
     }
   }

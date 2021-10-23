@@ -15,13 +15,6 @@ class ForecastScreen extends StatefulWidget {
 class _ForecastScreenState extends State<ForecastScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.read<ForecastsDataBloc>().state.city.name),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-      ),
-      body: DayScheduleListWidget(),
-    );
+    return DayScheduleListWidget();
   }
 }
