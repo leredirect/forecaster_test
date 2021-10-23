@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:forecaster/bloc/current_weather_data_bloc/current_weather_data_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:forecaster/models/forecasts_list.dart';
 
 class TodayDetailsWidget extends StatelessWidget {
   const TodayDetailsWidget({Key? key}) : super(key: key);
@@ -8,68 +11,73 @@ class TodayDetailsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Row(
+   // CurrentWeather state = context.read<CurrentWeatherDataBloc>().state;
+    return BlocBuilder<CurrentWeatherDataBloc, CurrentWeather>(
+      builder: (context, state) {
+        return Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              margin: EdgeInsets.all(10),
-              child: Column(children: const [
-                Icon(
-                  Icons.wb_sunny_sharp,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  margin: EdgeInsets.all(10),
+                  child: Column(children:[
+                    Icon(
+                      Icons.wb_sunny_sharp,
+                    ),
+                    Text(state.main.humidity.toString() + " %"),
+                  ]),
                 ),
-                Text("fallout"),
-              ]),
+                Container(
+                    margin: EdgeInsets.all(10),
+                  child: Column(children: [
+                    Icon(
+                      Icons.wb_sunny_sharp,
+                    ),
+                    Text(state.currentRain.the1H.toString() + " mm"),
+                  ]),
+                ),
+                Container(
+                  margin: EdgeInsets.all(10),
+                  child: Column(children: [
+                    Icon(
+                      Icons.wb_sunny_sharp,
+                    ),
+                    Text(state.main.pressure.toString() + " hPa"),
+                  ]),
+                ),
+              ],
             ),
-            Container(
-                margin: EdgeInsets.all(10),
-              child: Column(children: const [
-                Icon(
-                  Icons.wb_sunny_sharp,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  margin: EdgeInsets.all(10),
+                  child: Column(children: [
+                    Icon(
+                      Icons.wb_sunny_sharp,
+                    ),
+                    Text(state.wind.speed.toString() + " km/h"),
+                  ]),
                 ),
-                Text("humidity"),
-              ]),
-            ),
-            Container(
-              margin: EdgeInsets.all(10),
-              child: Column(children: const [
-                Icon(
-                  Icons.wb_sunny_sharp,
+                Container(
+                  margin: EdgeInsets.all(10),
+                  child: Column(children:  [
+                    Icon(
+                      Icons.wb_sunny_sharp,
+                    ),
+                    Text(state.wind.degreesToRoseOfWind()),
+                  ]),
                 ),
-                Text("pressure"),
-              ]),
+              ],
             ),
           ],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              margin: EdgeInsets.all(10),
-              child: Column(children: const [
-                Icon(
-                  Icons.wb_sunny_sharp,
-                ),
-                Text("wind speed"),
-              ]),
-            ),
-            Container(
-              margin: EdgeInsets.all(10),
-              child: Column(children: const [
-                Icon(
-                  Icons.wb_sunny_sharp,
-                ),
-                Text("wind direction"),
-              ]),
-            ),
-          ],
-        ),
-      ],
+        );
+      }
     );
   }
 }

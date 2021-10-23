@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:forecaster/widgets/day_schedule_list_widget.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:forecaster/bloc/forecasts_data_bloc/forecasts_data_bloc.dart';
 
 class ForecastScreen extends StatefulWidget {
-  const ForecastScreen({Key? key}) : super(key: key);
+  final String cityName;
+  const ForecastScreen({Key? key, required this.cityName}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ForecastScreenState();
@@ -14,11 +17,11 @@ class _ForecastScreenState extends State<ForecastScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("_CityName"),
+        title: Text(context.read<ForecastsDataBloc>().state.city.name),
         centerTitle: true,
         backgroundColor: Colors.white,
       ),
-      body: const DayScheduleListWidget(),
+      body: DayScheduleListWidget(),
     );
   }
 }

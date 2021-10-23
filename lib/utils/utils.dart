@@ -1,42 +1,103 @@
 import 'package:flutter/cupertino.dart';
-import 'package:forecaster/bloc/location_access_bloc/location_access_bloc.dart';
-import 'package:forecaster/bloc/location_access_bloc/location_access_event.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:forecaster/bloc/location_data_bloc/location_data_bloc.dart';
 import 'package:forecaster/bloc/location_data_bloc/location_data_event.dart';
 import 'package:location/location.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class Utils{
-  static Future<void> fetchLocation(BuildContext context) async {
+class Utils {
+  static Future<LocationData> fetchLocation(BuildContext context) async {
+    // try {
     Location location = Location();
-
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-    LocationData _locationData;
-
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      context.read<LocationAccessBloc>().add(LocationAccessUnavailableEvent());
-      if (!_serviceEnabled) {
-        context.read<LocationAccessBloc>().add(LocationAccessAvailableEvent());
-        return;
+    late LocationData locationData;
+    await location.requestService().then((value) async {
+      if (value = true) {
+        await location.hasPermission().then((value) async {
+          if (value != PermissionStatus.granted) {
+            await location.requestPermission().then((value) async {
+              if (value == PermissionStatus.granted || value == PermissionStatus.grantedLimited) {
+                await location.getLocation().then((value) {
+                  locationData = value;
+                  context
+                      .read<LocationDataBloc>()
+                      .add(LocationDataUpdateEvent(value));
+                });
+              } else {
+                Utils.showMyDialog(
+                    context,
+                    "Error",
+                    "Error code: Location permission denied.",
+                    "Retry",
+                    fetchLocation);
+              }
+            });
+          } else {
+            Utils.showMyDialog(
+                context,
+                "Error",
+                "Error code: Location permission denied.",
+                "Retry",
+                fetchLocation);
+          }
+        });
+      } else {
+        Utils.showMyDialog(
+            context,
+            "Error",
+            "Error code: Location service unavailable.",
+            "Retry",
+            fetchLocation);
       }
-    }
-
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      context.read<LocationAccessBloc>().add(LocationAccessUnavailableEvent());
-      if (_permissionGranted != PermissionStatus.granted) {
-        context.read<LocationAccessBloc>().add(LocationAccessAvailableEvent());
-        return;
-      }
-    }
-
-    _locationData = await location.getLocation().then((value) {
-      context.read<LocationDataBloc>().add(LocationDataUpdateEvent(value));
-      return value;
     });
+    return locationData;
+    //
+    // LocationData _locationData;
+    //
+    //
+    //   if (!_serviceEnabled) {
+    //     _serviceEnabled = await location.requestService()
+    //   } else if (_permissionGranted == PermissionStatus.denied) {
+    //     _permissionGranted = await location.requestPermission();
+    //   } else if( _permissionGranted != PermissionStatus.denied && _permissionGranted != PermissionStatus.deniedForever && _serviceEnabled){
+    //     _locationData = await location.getLocation();
+    //     print(_locationData.latitude.toString() +
+    //         _locationData.longitude.toString());
+    //     context
+    //         .read<LocationDataBloc>()
+    //         .add(LocationDataUpdateEvent(_locationData));
+    //     return _locationData;
+    //   }else{
+    //     Utils.showMyDialog(context, "Error", "Error code: Location Permission denied.", "Retry", fetchLocation(context));
+    //   }
+    // } on Exception catch (e) {
+    //   Utils.showMyDialog(context, "Error", "Error code: Platform exception.\n$e", "Retry", fetchLocation(context));
+    //   //print(e);
+    //   //fetchLocation(context);
+    // }
+  }
+
+  static Future<void> showMyDialog(BuildContext context, String title,
+      String text, String buttonText, dynamic onButtonTap) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: Text(text),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(buttonText),
+              onPressed: () async {
+                onButtonTap(context);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
