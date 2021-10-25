@@ -33,7 +33,7 @@ class TodayBrieflyWidget extends StatelessWidget {
             children: [
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/2.8, bottom: 20),
+                  padding: EdgeInsets.only(left: MediaQuery.of(context).size.width/6.5, bottom: 20),
                   child: Icon(
                     Icons.location_on_outlined,
                     size: 10, color: Colors.blue,

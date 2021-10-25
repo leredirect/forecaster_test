@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:forecaster/models/forecasts_list.dart';
-import 'package:location/location.dart';
 
 import 'forecasts_data_event.dart';
 

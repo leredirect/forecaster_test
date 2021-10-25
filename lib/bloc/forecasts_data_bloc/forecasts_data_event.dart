@@ -1,5 +1,5 @@
 import 'package:forecaster/models/forecasts_list.dart';
-import 'package:location/location.dart';
+
 
 class ForecastsDataEvent{}
 

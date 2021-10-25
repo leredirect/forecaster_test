@@ -21,9 +21,9 @@ class WeatherInHourWidget extends StatelessWidget {
         return Table(
           defaultVerticalAlignment: TableCellVerticalAlignment.bottom,
           columnWidths: <int, TableColumnWidth>{
-            0: FixedColumnWidth(MediaQuery.of(context).size.width / 20),
+            0: FixedColumnWidth(MediaQuery.of(context).size.width / 15),
             1: FlexColumnWidth(),
-            2: FixedColumnWidth(MediaQuery.of(context).size.width / 7)
+            2: FixedColumnWidth(MediaQuery.of(context).size.width / 4)
           },
           children: [
             TableRow(
