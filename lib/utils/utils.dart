@@ -20,119 +20,28 @@ class Utils {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
+      throw Exception('Location services are disabled.');
     }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
+        throw Exception('Location permissions are denied. Try to ');
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
+      throw Exception('Location permissions are permanently denied, we cannot request permissions.');
     }
 
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
     return await Geolocator.getCurrentPosition();
   }
 
-  //static Future<LocationData?> fetchLocation(BuildContext context) async {
-
-    /// Determine the current position of the device.
-    ///
-    /// When the location services are not enabled or permissions
-    /// are denied the `Future` will return an error.
-
-
-    // try {
-    // Location location = Location();
-    // late LocationData locationData;
-    // await location.requestService().then((value) async {
-    //   if (value = true) {
-    //     await location.hasPermission().then((value) async {
-    //       if (value != PermissionStatus.granted) {
-    //         await location.requestPermission().then((value) async {
-    //           if (value == PermissionStatus.granted ||
-    //               value == PermissionStatus.grantedLimited) {
-    //             await location.getLocation().then((value) {
-    //               locationData = value;
-    //               context
-    //                   .read<LocationDataBloc>()
-    //                   .add(LocationDataUpdateEvent(value));
-    //             });
-    //           } else {
-    //             Utils.showMyDialog(
-    //                 context,
-    //                 "Error",
-    //                 "Error code: Location permission denied.",
-    //                 "Retry",
-    //                 fetchLocation);
-    //           }
-    //         });
-    //       } else {
-    //         await location.getLocation().then((value) {
-    //           locationData = value;
-    //           context
-    //               .read<LocationDataBloc>()
-    //               .add(LocationDataUpdateEvent(value));
-    //         });
-    //       }
-    //     });
-    //   } else {
-    //     Utils.showMyDialog(
-    //         context,
-    //         "Error",
-    //         "Error code: Location service unavailable.",
-    //         "Retry",
-    //         fetchLocation);
-    //   }
-    // });
-    // return locationData;
-    //
-    // LocationData _locationData;
-    //
-    //
-    //   if (!_serviceEnabled) {
-    //     _serviceEnabled = await location.requestService()
-    //   } else if (_permissionGranted == PermissionStatus.denied) {
-    //     _permissionGranted = await location.requestPermission();
-    //   } else if( _permissionGranted != PermissionStatus.denied && _permissionGranted != PermissionStatus.deniedForever && _serviceEnabled){
-    //     _locationData = await location.getLocation();
-    //     print(_locationData.latitude.toString() +
-    //         _locationData.longitude.toString());
-    //     context
-    //         .read<LocationDataBloc>()
-    //         .add(LocationDataUpdateEvent(_locationData));
-    //     return _locationData;
-    //   }else{
-    //     Utils.showMyDialog(context, "Error", "Error code: Location Permission denied.", "Retry", fetchLocation(context));
-    //   }
-    // } on Exception catch (e) {
-    //   Utils.showMyDialog(context, "Error", "Error code: Platform exception.\n$e", "Retry", fetchLocation(context));
-    //   //print(e);
-    //   //fetchLocation(context);
-    // }
-  //}
-
   static Future<void> showMyDialog(BuildContext context, String title,
-      String text, String buttonText, dynamic onButtonTap) async {
+      String text, Widget textButton) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -143,13 +52,7 @@ class Utils {
             child: Text(text),
           ),
           actions: <Widget>[
-            TextButton(
-              child: Text(buttonText),
-              onPressed: () async {
-                onButtonTap(context);
-                Navigator.of(context).pop();
-              },
-            ),
+            textButton,
           ],
         );
       },
@@ -196,13 +99,11 @@ static final nameToIconMap = {
           context
               .read<ForecastsDataBloc>()
               .add(ForecastsDataUpdateEvent(forecastsData));
-          print('41');
           CurrentWeather currentWeatherData = CurrentWeather.fromJson(
               json.decode(currentWeatherDataResponse.body));
           context
               .read<CurrentWeatherDataBloc>()
               .add(CurrentWeatherDataUpdateEvent(currentWeatherData));
-          print('44');
           break;
         default:
           int statusCode = 0;
@@ -213,11 +114,18 @@ static final nameToIconMap = {
             statusCode = currentWeatherDataResponse.statusCode;
           }
           Utils.showMyDialog(context, "Error", "Error code: HTTP $statusCode",
-              "Retry", responseTransformer);
+              TextButton(child: const Text("Retry"),
+                onPressed: () async {
+                  responseTransformer(context);
+                  Navigator.of(context).pop();
+                },));
       }
     } on Exception catch (e) {
-      Utils.showMyDialog(context, "Error", "Error code: Platform exception.\n$e", "Retry", Utils._determinePosition());
-      responseTransformer(context);
+      Utils.showMyDialog(context, "Error", "\n$e", TextButton(child: const Text("Retry"),
+        onPressed: () async {
+          _determinePosition();
+          Navigator.of(context).pop();
+        },));
     }
   }
 

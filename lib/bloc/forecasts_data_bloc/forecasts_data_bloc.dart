@@ -9,7 +9,6 @@ class ForecastsDataBloc extends Bloc<ForecastsDataEvent, ForecastsList> {
   @override
   Stream<ForecastsList> mapEventToState(ForecastsDataEvent event) async* {
     if (event is ForecastsDataUpdateEvent) {
-      print("forecast_updated++++++++++++++++++++++++++++++++++++++++++++++");
       yield event.forecastsList;
     }
   }

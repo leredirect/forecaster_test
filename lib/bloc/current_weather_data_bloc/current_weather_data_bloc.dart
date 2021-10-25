@@ -32,7 +32,6 @@ class CurrentWeatherDataBloc
   @override
   Stream<CurrentWeather> mapEventToState(CurrentWeatherDataEvent event) async* {
     if (event is CurrentWeatherDataUpdateEvent) {
-      print("current_updated++++++++++++++++++++++++++++++++++++++++++++++");
       yield state.copyWith(event.currentWeather);
     }
   }

@@ -6,17 +6,14 @@ import 'package:forecaster/models/forecasts_list.dart';
 import 'package:forecaster/res/fonts/forecaster_icons.dart';
 import 'package:forecaster/utils/utils.dart';
 
-import '../consts.dart';
+import '../constants.dart';
 
 class TodayBrieflyWidget extends StatelessWidget {
   const TodayBrieflyWidget({Key? key}) : super(key: key);
 
-  //const TodayBrieflyWidget(CurrentWeather currentWeather, {Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
 
-    //CurrentWeather state = context.read<CurrentWeatherDataBloc>().state;
     return BlocBuilder<CurrentWeatherDataBloc, CurrentWeather>(
         builder: (context, state) {
           if (state.weather.isNotEmpty){
@@ -25,7 +22,7 @@ class TodayBrieflyWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Utils.nameToIconMap[state.weather.first.icon], color: Colors.yellow.shade600, size: 120,
+            Utils.nameToIconMap[state.weather.first.icon], color: Colors.blue.shade600, size: 120,
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,

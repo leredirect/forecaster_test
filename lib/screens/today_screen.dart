@@ -15,13 +15,6 @@ class TodayScreen extends StatefulWidget {
 }
 
 class _TodayScreenState extends State<TodayScreen> {
-  bool _isLoaded = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _isLoaded = true;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,24 +33,16 @@ class _TodayScreenState extends State<TodayScreen> {
               Container(
                 height: 2,
                 width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.topRight,
-                      colors: [
-                        Colors.red,
-                        Colors.orange,
-                        Colors.yellow,
-                        Colors.grey,
-                        Colors.blue,
-                        Colors.indigo,
-                        Colors.pink
-                      ]),
+                      colors: [Colors.pink, Colors.blue, Colors.indigo, Colors.pink]),
                 ),
               ),
-              Spacer(),
-              TodayBrieflyWidget(),
-              Spacer(),
+              const Spacer(),
+              const TodayBrieflyWidget(),
+              const Spacer(),
               Container(
                 height: 1,
                 width: MediaQuery.of(context).size.width / 2,
@@ -65,9 +50,9 @@ class _TodayScreenState extends State<TodayScreen> {
                   border: Border.all(color: Colors.grey),
                 ),
               ),
-              Spacer(),
-              TodayDetailsWidget(),
-              Spacer(),
+              const Spacer(),
+              const TodayDetailsWidget(),
+              const Spacer(),
               Container(
                 height: 1,
                 width: MediaQuery.of(context).size.width / 2,
@@ -75,7 +60,7 @@ class _TodayScreenState extends State<TodayScreen> {
                   border: Border.all(color: Colors.grey),
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               TextButton(
                   onPressed: () {
                     Share.share('Current weather in ' +
@@ -100,7 +85,7 @@ class _TodayScreenState extends State<TodayScreen> {
                     "Share",
                     style: TextStyle(color: Colors.red, fontSize: 17),
                   )),
-              Spacer(),
+              const Spacer(),
             ],
           ),
         ),

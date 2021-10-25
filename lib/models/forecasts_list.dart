@@ -1,7 +1,7 @@
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 
-import '../consts.dart';
+import '../constants.dart';
 
 enum ForecasterIconList {
   the_01d,
@@ -97,12 +97,7 @@ class CurrentWeather {
             '&' +
             openWeatherMapApiKey +
             '&units=metric'
-        // 'https://api.openweathermap.org/data/2.5/weather?lat=43&lon=23&' +
-        //     openWeatherMapApiKey +
-        //     '&units=metric'
         ));
-    print(response.statusCode);
-    print(response.body);
     return response;
   }
 
@@ -257,18 +252,13 @@ class ForecastsList {
   static Future<Response> fetchForecasts(double lat, double lon) async {
     Response response = await http.get(Uri.parse(
         'https://api.openweathermap.org/data/2.5/forecast?lat=' +
-            lat.toString() +
-            '&lon=' +
-            lon.toString() +
-            '&' +
-            openWeatherMapApiKey +
+            // lat.toString() +
+            // '&lon=' +
+            // lon.toString() +
+            // '&' +
+            // openWeatherMapApiKey +
             '&units=metric'
-        // 'https://api.openweathermap.org/data/2.5/forecast?lat=36&lon=32&' +
-        //     openWeatherMapApiKey +
-        //     '&units=metric'
         ));
-    print(response.statusCode);
-    print(response.body);
     return response;
   }
 

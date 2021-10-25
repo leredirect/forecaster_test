@@ -5,8 +5,9 @@ import 'package:forecaster/models/forecasts_list.dart';
 import 'package:forecaster/res/fonts/forecaster_icons.dart';
 import 'package:forecaster/screens/today_screen.dart';
 import 'package:forecaster/utils/utils.dart';
+import 'package:forecaster/screens/forecast_screen.dart';
 
-import 'forecast_screen.dart';
+import '../constants.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -28,46 +29,31 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
-    print(
-        "DCD_HS+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    try {
       await Utils.responseTransformer(context);
-    } on Exception catch (err) {
-      print("Platform exception calling serviceEnabled(): $err ++++++++++++++");
-      await Utils.responseTransformer(context);
-    }
   }
-
-  bool isVisible = false;
 
   @override
   Widget build(BuildContext context) {
-    print("rebuild");
     return BlocBuilder<CurrentWeatherDataBloc, CurrentWeather>(
         builder: (context, state) {
-      List<Widget> _elements = [
-        const TodayScreen(),
-        ForecastScreen(
-          cityName: state.name,
-        ),
-      ];
       return AnimatedSwitcher(
           duration: const Duration(milliseconds: 1000),
           child: state.weather.isNotEmpty
-              ?  Scaffold(
-            backgroundColor: Colors.white,
-            appBar: AppBar(
-              title: Text(_currentIndex == 0? "Today" : state.name),
-              centerTitle: true,
-              backgroundColor: Colors.white,
-            ),
-            body: PageView(
+              ? Scaffold(
+                  backgroundColor: mainBackgroundColor,
+                  appBar: AppBar(
+                    title: Text(
+                      _currentIndex == 0 ? "Today" : state.name,
+                      style: bigText,
+                    ),
+                    centerTitle: true,
+                    backgroundColor: secondaryBackgroundColor,
+                  ),
+                  body: PageView(
                     controller: _pageViewController,
-                    children: <Widget>[
-                      const TodayScreen(),
-                      ForecastScreen(
-                        cityName: state.name,
-                      ),
+                    children: const <Widget>[
+                      TodayScreen(),
+                      ForecastScreen(),
                     ],
                     onPageChanged: (index) {
                       setState(() {
@@ -75,11 +61,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       });
                     },
                   ),
-                  // _elements.elementAt(_currentIndex)
-
                   bottomNavigationBar: BottomNavigationBar(
                     unselectedItemColor: Colors.grey,
-                    backgroundColor: Colors.white,
+                    backgroundColor:secondaryBackgroundColor,
                     enableFeedback: true,
                     items: const [
                       BottomNavigationBarItem(
@@ -100,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     currentIndex: _currentIndex,
                     onTap: (index) {
                       _pageViewController.animateToPage(index,
-                          duration: Duration(milliseconds: 200),
+                          duration: const Duration(milliseconds: 200),
                           curve: Curves.bounceOut);
                     },
                   ),
@@ -108,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
               : Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
-                  color: Colors.white,
+                  color: mainBackgroundColor,
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
