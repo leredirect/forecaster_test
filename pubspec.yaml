@@ -15,11 +15,11 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_bloc: ^7.3.0
   animations: ^2.0.1
-  location: ^4.3.0
   connectivity: ^3.0.6
   http: ^0.13.4
   intl: ^0.17.0
   share: ^2.0.4
+  geolocator: ^7.7.1
 
 dev_dependencies:
   flutter_test:
