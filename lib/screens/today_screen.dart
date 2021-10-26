@@ -15,6 +15,15 @@ class TodayScreen extends StatefulWidget {
 }
 
 class _TodayScreenState extends State<TodayScreen> {
+  Widget _buildBorderWidget() {
+    return Container(
+      height: 1,
+      width: MediaQuery.of(context).size.width / 2,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +31,7 @@ class _TodayScreenState extends State<TodayScreen> {
       onRefresh: () async {
         await Utils.responseTransformer(context);
       },
-      displacement: 40,
+      displacement: 5,
       child: CustomScrollView(slivers: [
         SliverFillRemaining(
           hasScrollBody: false,
@@ -37,29 +46,22 @@ class _TodayScreenState extends State<TodayScreen> {
                   gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.topRight,
-                      colors: [Colors.pink, Colors.blue, Colors.indigo, Colors.pink]),
+                      colors: [
+                        Colors.pink,
+                        Colors.blue,
+                        Colors.indigo,
+                        Colors.pink
+                      ]),
                 ),
               ),
               const Spacer(),
               const TodayBrieflyWidget(),
               const Spacer(),
-              Container(
-                height: 1,
-                width: MediaQuery.of(context).size.width / 2,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                ),
-              ),
+              _buildBorderWidget(),
               const Spacer(),
               const TodayDetailsWidget(),
               const Spacer(),
-              Container(
-                height: 1,
-                width: MediaQuery.of(context).size.width / 2,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                ),
-              ),
+              _buildBorderWidget(),
               const Spacer(),
               TextButton(
                   onPressed: () {

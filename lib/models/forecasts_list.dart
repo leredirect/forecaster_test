@@ -96,8 +96,7 @@ class CurrentWeather {
             lon.toString() +
             '&' +
             openWeatherMapApiKey +
-            '&units=metric'
-        ));
+            '&units=metric'));
     return response;
   }
 
@@ -252,13 +251,12 @@ class ForecastsList {
   static Future<Response> fetchForecasts(double lat, double lon) async {
     Response response = await http.get(Uri.parse(
         'https://api.openweathermap.org/data/2.5/forecast?lat=' +
-            // lat.toString() +
-            // '&lon=' +
-            // lon.toString() +
-            // '&' +
-            // openWeatherMapApiKey +
-            '&units=metric'
-        ));
+            lat.toString() +
+            '&lon=' +
+            lon.toString() +
+            '&' +
+            openWeatherMapApiKey +
+            '&units=metric'));
     return response;
   }
 
@@ -354,9 +352,6 @@ class ListElement {
     pop = json["pop"].toDouble();
     sys = Sys.fromJson(json["sys"]);
     dtTxt = DateTime.parse(json["dt_txt"]);
-
-
-
   }
 
   Map<String, dynamic> toJson() => {

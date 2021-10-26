@@ -28,7 +28,7 @@ class ForecastScreen extends StatelessWidget {
       return result;
     }
 
-    int itemCount(int index) {
+    int listBuilderItemCount(int index) {
       List result = context
           .read<ForecastsDataBloc>()
           .state
@@ -67,7 +67,7 @@ class ForecastScreen extends StatelessWidget {
             child: ListView.builder(
               itemCount: 5,
               itemBuilder: (BuildContext context, index) {
-                if (itemCount(index) == 0) {
+                if (listBuilderItemCount(index) == 0) {
                   return Container();
                 } else {
                   return Column(
@@ -79,12 +79,15 @@ class ForecastScreen extends StatelessWidget {
                           index == 0
                               ? "TODAY"
                               : DateFormat('EEEE')
-                                  .format(DateTime.fromMillisecondsSinceEpoch(context
-                                          .read<ForecastsDataBloc>()
-                                          .state
-                                          .list[index == 0 ? 0 : (index * 8) - 1]
-                                          .dt *
-                                      1000))
+                                  .format(DateTime.fromMillisecondsSinceEpoch(
+                                      context
+                                              .read<ForecastsDataBloc>()
+                                              .state
+                                              .list[index == 0
+                                                  ? 0
+                                                  : (index * 8) - 1]
+                                              .dt *
+                                          1000))
                                   .toUpperCase(),
                           style: mediumText,
                         ),
@@ -93,20 +96,25 @@ class ForecastScreen extends StatelessWidget {
                       ListView.builder(
                         physics: const ClampingScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: itemCount(index),
+                        itemCount: listBuilderItemCount(index),
                         itemBuilder: (BuildContext context, innerIndex) {
                           return Container(
-                              padding: const EdgeInsets.only(left: 10, right: 10),
+                              padding:
+                                  const EdgeInsets.only(left: 10, right: 10),
                               width: MediaQuery.of(context).size.width,
                               height: MediaQuery.of(context).size.height / 12,
                               decoration: BoxDecoration(
                                   border: Border.all(
-                                      color:
-                                      indexToInnerIndex(
-                                          innerIndex, index, itemCount(0)) == 0 ? Colors.blue : mainBackgroundColor)),
+                                      color: indexToInnerIndex(
+                                                  innerIndex,
+                                                  index,
+                                                  listBuilderItemCount(0)) ==
+                                              0
+                                          ? Colors.blue
+                                          : mainBackgroundColor)),
                               child: WeatherInHourWidget(
-                                  index: indexToInnerIndex(
-                                      innerIndex, index, itemCount(0))));
+                                  index: indexToInnerIndex(innerIndex, index,
+                                      listBuilderItemCount(0))));
                         },
                       ),
                     ],

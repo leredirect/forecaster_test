@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,10 +13,7 @@ import 'package:forecaster/res/fonts/forecaster_icons.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
 
-
-
 class Utils {
-
   static Future<Position> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -31,10 +29,9 @@ class Utils {
       if (permission == LocationPermission.denied) {
         throw Exception('Location permissions are denied. Try to ');
       }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      throw Exception('Location permissions are permanently denied, we cannot request permissions.');
+    } else if (permission == LocationPermission.deniedForever) {
+      throw Exception(
+          'Location permissions are permanently denied, we cannot request permissions.');
     }
 
     return await Geolocator.getCurrentPosition();
@@ -58,44 +55,47 @@ class Utils {
       },
     );
   }
-static final nameToIconMap = {
-  //day
-  "01d": ForecasterIcons.sun,
-  "02d": ForecasterIcons.cloud_sun,
-  "03d": ForecasterIcons.cloud,
-  "04d": ForecasterIcons.clouds,
-  "09d": ForecasterIcons.windy_rain,
-  "10d": ForecasterIcons.rain,
-  "11d": ForecasterIcons.cloud_flash,
-  "13d": ForecasterIcons.snow,
-  "50d": ForecasterIcons.mist,
-  //night
-  "01n": ForecasterIcons.moon,
-  "02n": ForecasterIcons.cloud_moon,
-  "03n": ForecasterIcons.cloud,
-  "04n": ForecasterIcons.clouds,
-  "09n": ForecasterIcons.windy_rain,
-  "10n": ForecasterIcons.rain,
-  "11n": ForecasterIcons.cloud_flash,
-  "13n": ForecasterIcons.snow,
-  "50n": ForecasterIcons.mist,
-};
+
+  static final nameToIconMap = {
+    //day
+    "01d": ForecasterIcons.sun,
+    "02d": ForecasterIcons.cloud_sun,
+    "03d": ForecasterIcons.cloud,
+    "04d": ForecasterIcons.clouds,
+    "09d": ForecasterIcons.windy_rain,
+    "10d": ForecasterIcons.rain,
+    "11d": ForecasterIcons.cloud_flash,
+    "13d": ForecasterIcons.snow,
+    "50d": ForecasterIcons.mist,
+    //night
+    "01n": ForecasterIcons.moon,
+    "02n": ForecasterIcons.cloud_moon,
+    "03n": ForecasterIcons.cloud,
+    "04n": ForecasterIcons.clouds,
+    "09n": ForecasterIcons.windy_rain,
+    "10n": ForecasterIcons.rain,
+    "11n": ForecasterIcons.cloud_flash,
+    "13n": ForecasterIcons.snow,
+    "50n": ForecasterIcons.mist,
+  };
 
   static Future<void> responseTransformer(BuildContext context) async {
-    try {
-      Position locationData = await Utils._determinePosition();
+    ConnectivityResult connection = await Connectivity().checkConnectivity();
+    if (connection != ConnectivityResult.none) {
+      try {
+        Position locationData = await Utils._determinePosition();
 
-      Response currentWeatherDataResponse =
-      await CurrentWeather.fetchCurrentWeather(
-          locationData.latitude, locationData.longitude);
+        Response currentWeatherDataResponse =
+            await CurrentWeather.fetchCurrentWeather(
+                locationData.latitude, locationData.longitude);
 
-      Response forecastsDataResponse = await ForecastsList.fetchForecasts(
-          locationData.latitude, locationData.longitude);
-      switch (forecastsDataResponse.statusCode &
-      currentWeatherDataResponse.statusCode) {
-        case 200:
+        Response forecastsDataResponse = await ForecastsList.fetchForecasts(
+            locationData.latitude, locationData.longitude);
+
+        if (forecastsDataResponse.statusCode == 200 &&
+            currentWeatherDataResponse.statusCode == 200) {
           ForecastsList forecastsData =
-          ForecastsList.fromJson(json.decode(forecastsDataResponse.body));
+              ForecastsList.fromJson(json.decode(forecastsDataResponse.body));
           context
               .read<ForecastsDataBloc>()
               .add(ForecastsDataUpdateEvent(forecastsData));
@@ -104,8 +104,7 @@ static final nameToIconMap = {
           context
               .read<CurrentWeatherDataBloc>()
               .add(CurrentWeatherDataUpdateEvent(currentWeatherData));
-          break;
-        default:
+        } else {
           int statusCode = 0;
           if (currentWeatherDataResponse.statusCode != 200) {
             statusCode = currentWeatherDataResponse.statusCode;
@@ -113,20 +112,43 @@ static final nameToIconMap = {
           if (forecastsDataResponse.statusCode != 200) {
             statusCode = currentWeatherDataResponse.statusCode;
           }
-          Utils.showMyDialog(context, "Error", "Error code: HTTP $statusCode",
-              TextButton(child: const Text("Retry"),
+          Utils.showMyDialog(
+              context,
+              "Error",
+              "Error code: HTTP $statusCode",
+              TextButton(
+                child: const Text("Retry"),
                 onPressed: () async {
                   responseTransformer(context);
                   Navigator.of(context).pop();
-                },));
+                },
+              ));
+        }
+      } on Exception catch (e) {
+        Utils.showMyDialog(
+            context,
+            "Error",
+            "\n$e",
+            TextButton(
+              child: const Text("Retry"),
+              onPressed: () async {
+                _determinePosition();
+                Navigator.of(context).pop();
+              },
+            ));
       }
-    } on Exception catch (e) {
-      Utils.showMyDialog(context, "Error", "\n$e", TextButton(child: const Text("Retry"),
-        onPressed: () async {
-          _determinePosition();
-          Navigator.of(context).pop();
-        },));
+    } else {
+      Utils.showMyDialog(
+          context,
+          "Error",
+          "No internet connection",
+          TextButton(
+            child: const Text("Ok"),
+            onPressed: () async {
+              Navigator.of(context).pop();
+            },
+          ));
+      return;
     }
   }
-
 }
