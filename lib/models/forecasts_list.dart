@@ -1,7 +1,7 @@
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 
-import '../consts.dart';
+import '../constants.dart';
 
 enum ForecasterIconList {
   the_01d,
@@ -96,13 +96,7 @@ class CurrentWeather {
             lon.toString() +
             '&' +
             openWeatherMapApiKey +
-            '&units=metric'
-        // 'https://api.openweathermap.org/data/2.5/weather?lat=43&lon=23&' +
-        //     openWeatherMapApiKey +
-        //     '&units=metric'
-        ));
-    print(response.statusCode);
-    print(response.body);
+            '&units=metric'));
     return response;
   }
 
@@ -262,13 +256,7 @@ class ForecastsList {
             lon.toString() +
             '&' +
             openWeatherMapApiKey +
-            '&units=metric'
-        // 'https://api.openweathermap.org/data/2.5/forecast?lat=36&lon=32&' +
-        //     openWeatherMapApiKey +
-        //     '&units=metric'
-        ));
-    print(response.statusCode);
-    print(response.body);
+            '&units=metric'));
     return response;
   }
 
@@ -364,9 +352,6 @@ class ListElement {
     pop = json["pop"].toDouble();
     sys = Sys.fromJson(json["sys"]);
     dtTxt = DateTime.parse(json["dt_txt"]);
-
-
-
   }
 
   Map<String, dynamic> toJson() => {

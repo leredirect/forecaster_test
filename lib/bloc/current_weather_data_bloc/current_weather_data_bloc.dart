@@ -7,13 +7,14 @@ class CurrentWeatherDataBloc
     extends Bloc<CurrentWeatherDataEvent, CurrentWeather> {
   CurrentWeatherDataBloc()
       : super(CurrentWeather(
-    currentRain: CurrentRain(the1H: 0, the3H: 0),
+            currentRain: CurrentRain(the1H: 0, the3H: 0),
             visibility: 0,
             base: '',
             id: 0,
             cod: 0,
             clouds: Clouds(all: 0),
-            currentSys: CurrentSys(country: '', id: 0, sunset: 0, type: 0, sunrise: 0),
+            currentSys:
+                CurrentSys(country: '', id: 0, sunset: 0, type: 0, sunrise: 0),
             main: Main(
                 temp: 0,
                 feelsLike: 0,
@@ -32,7 +33,6 @@ class CurrentWeatherDataBloc
   @override
   Stream<CurrentWeather> mapEventToState(CurrentWeatherDataEvent event) async* {
     if (event is CurrentWeatherDataUpdateEvent) {
-      print("current_updated++++++++++++++++++++++++++++++++++++++++++++++");
       yield state.copyWith(event.currentWeather);
     }
   }

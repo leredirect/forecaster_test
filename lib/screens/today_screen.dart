@@ -15,12 +15,14 @@ class TodayScreen extends StatefulWidget {
 }
 
 class _TodayScreenState extends State<TodayScreen> {
-  bool _isLoaded = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _isLoaded = true;
+  Widget _buildBorderWidget() {
+    return Container(
+      height: 1,
+      width: MediaQuery.of(context).size.width / 2,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+      ),
+    );
   }
 
   @override
@@ -29,7 +31,7 @@ class _TodayScreenState extends State<TodayScreen> {
       onRefresh: () async {
         await Utils.responseTransformer(context);
       },
-      displacement: 40,
+      displacement: 5,
       child: CustomScrollView(slivers: [
         SliverFillRemaining(
           hasScrollBody: false,
@@ -40,42 +42,27 @@ class _TodayScreenState extends State<TodayScreen> {
               Container(
                 height: 2,
                 width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.topRight,
                       colors: [
-                        Colors.red,
-                        Colors.orange,
-                        Colors.yellow,
-                        Colors.grey,
+                        Colors.pink,
                         Colors.blue,
                         Colors.indigo,
                         Colors.pink
                       ]),
                 ),
               ),
-              Spacer(),
-              TodayBrieflyWidget(),
-              Spacer(),
-              Container(
-                height: 1,
-                width: MediaQuery.of(context).size.width / 2,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                ),
-              ),
-              Spacer(),
-              TodayDetailsWidget(),
-              Spacer(),
-              Container(
-                height: 1,
-                width: MediaQuery.of(context).size.width / 2,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                ),
-              ),
-              Spacer(),
+              const Spacer(),
+              const TodayBrieflyWidget(),
+              const Spacer(),
+              _buildBorderWidget(),
+              const Spacer(),
+              const TodayDetailsWidget(),
+              const Spacer(),
+              _buildBorderWidget(),
+              const Spacer(),
               TextButton(
                   onPressed: () {
                     Share.share('Current weather in ' +
@@ -100,7 +87,7 @@ class _TodayScreenState extends State<TodayScreen> {
                     "Share",
                     style: TextStyle(color: Colors.red, fontSize: 17),
                   )),
-              Spacer(),
+              const Spacer(),
             ],
           ),
         ),
