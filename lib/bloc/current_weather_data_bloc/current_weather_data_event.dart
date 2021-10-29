@@ -1,4 +1,4 @@
-import 'package:forecaster/models/forecasts_list.dart';
+import 'package:forecaster/models/current_weather.dart';
 
 class CurrentWeatherDataEvent {}
 
