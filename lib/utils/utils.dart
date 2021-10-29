@@ -8,10 +8,13 @@ import 'package:forecaster/bloc/current_weather_data_bloc/current_weather_data_b
 import 'package:forecaster/bloc/current_weather_data_bloc/current_weather_data_event.dart';
 import 'package:forecaster/bloc/forecasts_data_bloc/forecasts_data_bloc.dart';
 import 'package:forecaster/bloc/forecasts_data_bloc/forecasts_data_event.dart';
+import 'package:forecaster/models/current_weather.dart';
 import 'package:forecaster/models/forecasts_list.dart';
-import 'package:forecaster/res/fonts/forecaster_icons.dart';
+import 'package:forecaster/networking/api_client.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
+
+import 'forecaster_icons.dart';
 
 class Utils {
   static Future<Position> _determinePosition() async {
@@ -38,7 +41,7 @@ class Utils {
   }
 
   static Future<void> showMyDialog(BuildContext context, String title,
-      String text, Widget textButton) async {
+      String text, String buttonText, onTap) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -49,7 +52,10 @@ class Utils {
             child: Text(text),
           ),
           actions: <Widget>[
-            textButton,
+            TextButton(
+              child: const Text("Ok"),
+              onPressed: onTap,
+            ),
           ],
         );
       },
@@ -79,76 +85,91 @@ class Utils {
     "50n": ForecasterIcons.mist,
   };
 
-  static Future<void> responseTransformer(BuildContext context) async {
+  static Future<void> forecastsResponseTransformer(BuildContext context) async {
+    ConnectivityResult connection = await Connectivity().checkConnectivity();
+    if (connection != ConnectivityResult.none) {
+      try {
+        Position locationData = await Utils._determinePosition();
+
+        Response forecastsDataResponse = await ApiClient.fetchForecasts(
+            locationData.latitude, locationData.longitude);
+
+        ForecastsList forecastsData =
+            ForecastsList.fromJson(json.decode(forecastsDataResponse.body));
+        context
+            .read<ForecastsDataBloc>()
+            .add(ForecastsDataUpdateEvent(forecastsData));
+      } on Exception catch (e) {
+        Utils.showMyDialog(context, "Error", "\n$e", "Retry", () async {
+          _determinePosition();
+          Navigator.of(context).pop();
+        });
+      }
+    } else {
+      Utils.showMyDialog(context, "Error", "No internet connection", "Ok",
+          () async {
+        Navigator.of(context).pop();
+      });
+      return;
+    }
+  }
+
+  static Future<void> currentWeatherResponseTransformer(
+      BuildContext context) async {
     ConnectivityResult connection = await Connectivity().checkConnectivity();
     if (connection != ConnectivityResult.none) {
       try {
         Position locationData = await Utils._determinePosition();
 
         Response currentWeatherDataResponse =
-            await CurrentWeather.fetchCurrentWeather(
+            await ApiClient.fetchCurrentWeather(
                 locationData.latitude, locationData.longitude);
-
-        Response forecastsDataResponse = await ForecastsList.fetchForecasts(
-            locationData.latitude, locationData.longitude);
-
-        if (forecastsDataResponse.statusCode == 200 &&
-            currentWeatherDataResponse.statusCode == 200) {
-          ForecastsList forecastsData =
-              ForecastsList.fromJson(json.decode(forecastsDataResponse.body));
-          context
-              .read<ForecastsDataBloc>()
-              .add(ForecastsDataUpdateEvent(forecastsData));
-          CurrentWeather currentWeatherData = CurrentWeather.fromJson(
-              json.decode(currentWeatherDataResponse.body));
-          context
-              .read<CurrentWeatherDataBloc>()
-              .add(CurrentWeatherDataUpdateEvent(currentWeatherData));
-        } else {
-          int statusCode = 0;
-          if (currentWeatherDataResponse.statusCode != 200) {
-            statusCode = currentWeatherDataResponse.statusCode;
-          }
-          if (forecastsDataResponse.statusCode != 200) {
-            statusCode = currentWeatherDataResponse.statusCode;
-          }
-          Utils.showMyDialog(
-              context,
-              "Error",
-              "Error code: HTTP $statusCode",
-              TextButton(
-                child: const Text("Retry"),
-                onPressed: () async {
-                  responseTransformer(context);
-                  Navigator.of(context).pop();
-                },
-              ));
-        }
+        CurrentWeather currentWeatherData = CurrentWeather.fromJson(
+            json.decode(currentWeatherDataResponse.body));
+        context
+            .read<CurrentWeatherDataBloc>()
+            .add(CurrentWeatherDataUpdateEvent(currentWeatherData));
       } on Exception catch (e) {
-        Utils.showMyDialog(
-            context,
-            "Error",
-            "\n$e",
-            TextButton(
-              child: const Text("Retry"),
-              onPressed: () async {
-                _determinePosition();
-                Navigator.of(context).pop();
-              },
-            ));
+        Utils.showMyDialog(context, "Error", "\n$e", "Retry", () async {
+          _determinePosition();
+          Navigator.of(context).pop();
+        });
       }
     } else {
-      Utils.showMyDialog(
-          context,
-          "Error",
-          "No internet connection",
-          TextButton(
-            child: const Text("Ok"),
-            onPressed: () async {
-              Navigator.of(context).pop();
-            },
-          ));
+      Utils.showMyDialog(context, "Error", "No internet connection", "Ok",
+          () async {
+        Navigator.of(context).pop();
+      });
       return;
+    }
+  }
+
+  static int indexToInnerIndex(int innerIndex, int index, int firstDayLength) {
+    int result = 0;
+    if (index == 0) {
+      result = innerIndex;
+    } else if (index == 1) {
+      result = innerIndex + firstDayLength;
+    } else if (index == 2) {
+      result = innerIndex + firstDayLength + 8;
+    } else if (index == 3) {
+      result = innerIndex + firstDayLength + 16;
+    } else if (index == 4) {
+      result = innerIndex + firstDayLength + 24;
+    }
+    return result;
+  }
+
+  static int listBuilderItemCount(int index, ForecastsList forecastList) {
+    List result = forecastList.forecastBaseInfoList
+        .where((element) =>
+            DateTime.fromMillisecondsSinceEpoch(element.dt * 1000).day ==
+            DateTime.now().day)
+        .toList();
+    if (index == 0) {
+      return result.length;
+    } else {
+      return 8;
     }
   }
 }

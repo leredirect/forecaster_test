@@ -20,6 +20,7 @@ dependencies:
   intl: ^0.17.0
   share: ^2.0.4
   geolocator: ^7.7.1
+  dcdg: ^4.0.0
 
 dev_dependencies:
   flutter_test:
@@ -31,5 +32,5 @@ flutter:
   fonts:
     - family: ForecasterIcons
       fonts:
-        - asset: lib/res/fonts/forecaster_icons.ttf
+        - asset: assets/fonts/forecaster_icons.ttf
   uses-material-design: true
